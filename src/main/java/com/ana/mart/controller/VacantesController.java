@@ -93,7 +93,7 @@ public class VacantesController {
 		vacantesService.guardar(vacante);
 		atributo.addFlashAttribute("msg", "Vacante guardada con éxito");
 		//mostrar la vista
-		return "redirect:/vacantes/indexPaginate";
+		return "vacantes/indexPaginate";
 	}
 	
 	@GetMapping("/crear")

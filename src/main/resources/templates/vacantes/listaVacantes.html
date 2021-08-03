@@ -1,6 +1,5 @@
 <!doctype html>
-
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es"  xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,17 +14,16 @@
     <link th:href="@{/bootstrap/css/jumbotron.css}" rel="stylesheet">
     <link th:href="@{/bootstrap/css/sticky-footer-navbar.css}" rel="stylesheet">
     <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet">
-  
-    </head>
+  </head>
 
   <body >
+  
     <header th:insert="fragmentos/menu.html::menu-principal">
-     
-    </header>  
+    </header>
 
     <main role="main">     
       <hr style="border:0px">
-      <div class="container"> 
+      <div class="container-fluid"> 
 
         <div class="card">
           <h4 class="card-header"><strong>Listado de Ofertas de Trabajo</strong></h4>              
@@ -33,14 +31,12 @@
             <a class="btn btn-secondary text-white" th:href="@{/vacantes/crear}" title="Crear nueva Oferta de Trabajo" role="button"><i class="fas fa-file" aria-hidden="true"></i> Nueva</a>            
             <hr>
             <div class="alert alert-success" role="alert"
-             th:if="${msg != null}"
-             th:text="${msg}">
-            
+            	th:if="${msg != null}" th:text="${msg}">
             </div>
             <table class="table table-hover">
               <thead class="thead-dark">
                 <tr>
-                  <th scope="col">id</th>
+                  <th scope="col">Id</th>
                   <th scope="col">Logo</th>
                   <th scope="col">Categoría</th>
                   <th scope="col">Nombre</th>                  
@@ -52,54 +48,59 @@
               </thead>
               <tbody>
                 <tr th:each="vacante:${vacantes}">
-                <td th:text="${vacante.id}"></td>
-                  <td><img th:src="@{/images/{img}(img=${vacante.imagen})}"
-                  width="35" height="35"></td>
-                  <td></td>
+                  <td th:text="${vacante.id}"></td>
+                  <td><img th:src="@{/images/{img}(img=${vacante.imagen})}" width="35" height="35"></td>
+                  <td th:text="${vacante.categoria.nombre}"></td>
                   <td th:text="${vacante.nombre}"></td>                  
                   <td th:text="${vacante.fecha}"></td>
                   <td th:text="${vacante.estatus}"></td>
-                  <!-- <td th:text="${vacante.fecha}"></td>-->
-                  <!--<td  th:text="${vacante.destacado ==1?'si':'no'}" ></td>-->
+                  <!-- <td th:text="${vacante.destacado}"></td> -->
+                  <!-- <td th:text="${vacante.destacado == 1?'Si':'No'}"></td> -->
                   <td>
-                  <span th:if="${vacante.destacado==1}" class="badge bg-primary">Si</span>
-                  <span th:unless="${vacante.destacado==1}" class="badge bg-secondary">Si</span>
+                  	<span th:if="${vacante.destacado == 1}" class="badge bg-secondary">Si</span>
+                  	<span th:unless="${vacante.destacado == 1}" class="badge bg-danger">No</span>
                   </td>
-                  
-                  
                   <td>
-                    <a href="#" class="btn btn-secondary btn-sm" role="button" title="Editar el registro."><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
-                    <a href="#" onclick="return confirm('¿Estas seguro?')" class="btn btn-danger btn-sm" role="button" title="Eliminar el registro."><i class="fas fa-trash" aria-hidden="true"></i></a>
+                    <a th:href="@{/vacantes/buscar(id=${vacante.id})}" class="btn btn-secondary btn-sm" role="button" title="Editar el registro."><i class="fas fa-pencil-alt" aria-hidden="true"></i></a>
+                    <a th:href="@{/vacantes/eliminar(id=${vacante.id})}" onclick="return confirm('¿Estas seguro?')" class="btn btn-danger btn-sm" role="button" title="Eliminar el registro."><i class="fas fa-trash" aria-hidden="true"></i></a>
                     <a th:href="@{/vacantes/detalle(id=${vacante.id})}" class="btn btn-secondary btn-sm" role="button" title="Detalles del registro."><i class="far fa-file-alt"></i></a>
                   </td>
                 </tr>
-                
                                
               </tbody>
+              <tr>
+              <td colspan="8" >
+              Total de vacantes: [[${total}]]
+              </td>
+              </tr>
             </table>
-            
+            <nav th:if="${vacantes.totalPages > 0}" aria-label="Page navigation example" >
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${vacantes.number == 0 ? 'disabled' : ''}">
+                <a th:href="@{/vacantes/indexPaginate(page=${vacantes.number - 1})}" class="page-link">Anterior</a>
+            </li>
+                       
+            <li class="page-item" th:classappend="${i eq vacantes.number + 1} ? 'active'" th:each="i : ${#numbers.sequence( 1, vacantes.totalPages, 1)}">
+                <a class="page-link" th:href="@{/vacantes/indexPaginate?page={tmpPag} (tmpPag=${i-1}) }" th:text="${i}" th:title="${'Page '+ i}" data-toggle="tooltip"></a>
+            </li>
+            <li class="page-item" th:classappend="${vacantes.number == (vacantes.totalPages - 1) ? 'disabled' : ''}">
+                <a th:href="@{/vacantes/indexPaginate(page=${vacantes.number + 1})}" class="page-link">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
           </div>
         </div>
       </div> <!-- /container -->
 
     </main>
 
-    <footer class="footer">
-      <div class="container">
-        <p>
-          &copy; 2021 EmpleosApp, Inc. | WebApp Desarrollada con Spring Boot 2.3.0 y Bootstrap 4.2 | Autor: webmaster | &middot; <a href="#">Privacy</a>
-          &middot; <a href="#">Terms</a>
-        </p>
-      </div>
-   <footer class="footer" th:insert="fragmentos/pie.html::pie">
-     
-     </footer>
+    <footer class="footer" th:insert="fragmentos/pie.html::pie">
+    </footer>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script th:src="@{bootstrap/js/bootstrap.min.js}"></script>
-  
-    </body>
+    <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+  </body>
 </html>
